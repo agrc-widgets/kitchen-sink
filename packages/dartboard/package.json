@@ -1,9 +1,9 @@
 {
   "name": "@agrc/dart-board",
-  "version": "3.3.1",
+  "version": "3.3.2-alpha.0+d58587c",
   "private": false,
   "license": "MIT",
-  "homepage": "https://github.com/agrc/kitchen-sink/blob/main/packages/dartboard/READMD.md",
+  "homepage": "https://github.com/agrc/kitchen-sink/blob/main/packages/dartboard/readme.md",
   "repository": {
     "type": "git",
     "url": "https://github.com/agrc/kitchen-sink.git"
@@ -32,5 +32,6 @@
     "react",
     "geocoding",
     "spatial"
-  ]
+  ],
+  "gitHead": "d58587cbb9d6a4c25c0b013703782b66e9a063e1"
 }
