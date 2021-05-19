@@ -2,7 +2,6 @@ import React, { useState, useCallback } from 'react';
 import PropTypes from 'prop-types';
 import { toQueryString } from '@agrc/helpers';
 import classNames from 'clsx';
-import './Dartboard.css';
 
 const ADDRESS_TYPE = 'single-address';
 const MILEPOST_TYPE = 'route-milepost';
