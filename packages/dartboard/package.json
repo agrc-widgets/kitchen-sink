@@ -1,6 +1,6 @@
 {
   "name": "@agrc/dart-board",
-  "version": "3.3.2-alpha.0+d58587c",
+  "version": "3.3.2-alpha.6",
   "private": false,
   "license": "MIT",
   "homepage": "https://github.com/agrc/kitchen-sink/blob/main/packages/dartboard/readme.md",
@@ -8,9 +8,17 @@
     "type": "git",
     "url": "https://github.com/agrc/kitchen-sink.git"
   },
-  "main": "./dist/index.js",
+  "main": "./dist/dart-board.umd.js",
+  "module": "./dist/dart-bard.es.js",
+  "exports": {
+    ".": {
+      "import": "./dist/dart-board.es.js",
+      "require": "./dist/dart-board.umd.js"
+    }
+  },
   "files": [
-    "/dist"
+    "dist",
+    "readme.md"
   ],
   "peerDependencies": {
     "bootstrap": "^4.5.3",
@@ -32,6 +40,5 @@
     "react",
     "geocoding",
     "spatial"
-  ],
-  "gitHead": "d58587cbb9d6a4c25c0b013703782b66e9a063e1"
+  ]
 }
