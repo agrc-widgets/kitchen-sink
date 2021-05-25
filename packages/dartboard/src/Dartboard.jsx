@@ -257,15 +257,17 @@ const useDartboard = (userProps = {}) => {
 
   const outputTransform = React.useCallback((result, point) => {
     let attributes = {
-      address: result.inputAddress
+      ...result.attributes,
+      address: result.matchAddress || result.MatchAddress || result.inputAddress || result.InputAddress
     };
+
     let popupTemplate = {
       title: '{address}'
     };
 
     if (props.type !== ADDRESS_TYPE) {
       attributes = {
-        matchRoute: result.matchRoute
+        matchRoute: result.matchRoute || result.MatchRoute
       };
       popupTemplate = {
         title: '{matchRoute}'
