@@ -49,9 +49,12 @@
     "parser": "babel-eslint"
   },
   "scripts": {
+    "vite:dev": "vite",
+    "vite:build": "vite build",
+    "vite:serve": "vite preview",
     "storybook": "start-storybook -p 6006",
     "build-storybook": "build-storybook",
-    "build": "lerna exec 'babel src --out-dir dist --root-mode upward --delete-dir-on-start --source-maps --ignore \"**/*.stories.js\",\"**/*.test.js\" --env-name prod && copyfiles --up 1 src/*.svg dist && sass src:dist'",
+    "build": "lerna exec 'vite build --config ../../vite.config.js' --no-bail",
     "test": "jest --watch",
     "start": "npm run build && chokidar \"packages/**/*.*\" \"!packages/**/dist/**/*.*\" -c \"npm run build\"",
     "link:external": "lerna exec -- npm link",
