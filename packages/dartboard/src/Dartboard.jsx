@@ -1,10 +1,11 @@
-import React, { useState, useCallback } from 'react';
+import * as React from 'react';
 import PropTypes from 'prop-types';
 import { toQueryString } from '@agrc/helpers';
 import classNames from 'clsx';
 
 const ADDRESS_TYPE = 'single-address';
 const MILEPOST_TYPE = 'route-milepost';
+
 
 const defaultProps = {
   type: ADDRESS_TYPE,
@@ -143,17 +144,17 @@ const TailwindDartboard = (props) => {
   );
 };
 
-const useDartboard = (userProps={}) => {
+const useDartboard = (userProps = {}) => {
   const props = {
     ...defaultProps,
     ...userProps
   };
 
-  const [firstInput, setFirstInput] = useState();
-  const [secondInput, setSecondInput] = useState();
-  const [firstIsValid, setFirstIsValid] = useState(true);
-  const [secondIsValid, setSecondIsValid] = useState(true);
-  const [found, setFound] = useState();
+  const [firstInput, setFirstInput] = React.useState();
+  const [secondInput, setSecondInput] = React.useState();
+  const [firstIsValid, setFirstIsValid] = React.useState(true);
+  const [secondIsValid, setSecondIsValid] = React.useState(true);
+  const [found, setFound] = React.useState();
 
   let baseUrl = 'https://api.mapserv.utah.gov/api/v1/geocode';
   if (props.type !== ADDRESS_TYPE) {
@@ -217,43 +218,20 @@ const useDartboard = (userProps={}) => {
     ...sanitize(buttonProps)
   });
 
-  const find = useCallback(async () => {
-    if (!validate()) {
-      return false;
-    }
+  const validate = React.useCallback(() => {
+    const firstValidity = firstInput?.trim()?.length > 0;
+    const secondValidity = secondInput?.trim()?.length > 0;
 
-    let response;
+    setFirstIsValid(firstValidity);
+    setSecondIsValid(secondValidity);
 
-    try {
-      response = await get({
-        firstInput,
-        secondInput
-      });
-    } catch (err) {
-      return props.events.error(
-        response?.text() || {
-          message: err.message,
-          status: 400
-        }
-      );
-    }
+    // reset not found message
+    setFound(null);
 
-    const location = await extractResponse(response);
+    return firstValidity && secondValidity;
+  }, [firstInput, secondInput]);
 
-    if (location) {
-      return props.events.success(location);
-    }
-  }, [firstInput, secondInput, validate, props.events, get, extractResponse]);
-
-  const handleKeyUp = useCallback((event) => {
-    if (event.key !== 'Enter') {
-      return;
-    }
-
-    find();
-  }, [find]);
-
-  const get = useCallback((options) => {
+  const get = React.useCallback((options) => {
     const url = `${baseUrl}/${options.firstInput}/${options.secondInput}?`;
 
     let query = {
@@ -277,7 +255,32 @@ const useDartboard = (userProps={}) => {
     });
   }, [props.apiKey, props.wkid, props.address, props.milepost, props.type, props.format, props.callback, baseUrl]);
 
-  const extractResponse = useCallback(async (response) => {
+  const outputTransform = React.useCallback((result, point) => {
+    let attributes = {
+      address: result.inputAddress
+    };
+    let popupTemplate = {
+      title: '{address}'
+    };
+
+    if (props.type !== ADDRESS_TYPE) {
+      attributes = {
+        matchRoute: result.matchRoute
+      };
+      popupTemplate = {
+        title: '{matchRoute}'
+      };
+    }
+
+    return {
+      geometry: point,
+      symbol: props.pointSymbol,
+      attributes,
+      popupTemplate
+    };
+  }, [props.pointSymbol, props.type]);
+
+  const extractResponse = React.useCallback(async (response) => {
     if (!response.ok) {
       setFound(false);
 
@@ -312,43 +315,41 @@ const useDartboard = (userProps={}) => {
     return outputTransform(result, point);
   }, [outputTransform, props.wkid, props.format, props.events]);
 
-  const validate = useCallback(() => {
-    const firstValidity = firstInput?.trim()?.length > 0;
-    const secondValidity = secondInput?.trim()?.length > 0;
-
-    setFirstIsValid(firstValidity);
-    setSecondIsValid(secondValidity);
-
-    // reset not found message
-    setFound(null);
-
-    return firstValidity && secondValidity;
-  }, [firstInput, secondInput]);
-
-  const outputTransform = useCallback((result, point) => {
-    let attributes = {
-      address: result.inputAddress
-    };
-    let popupTemplate = {
-      title: '{address}'
-    };
-
-    if (props.type !== ADDRESS_TYPE) {
-      attributes = {
-        matchRoute: result.matchRoute
-      };
-      popupTemplate = {
-        title: '{matchRoute}'
-      };
+  const find = React.useCallback(async () => {
+    if (!validate()) {
+      return false;
     }
 
-    return {
-      geometry: point,
-      symbol: props.pointSymbol,
-      attributes,
-      popupTemplate
-    };
-  }, [props.pointSymbol, props.type]);
+    let response;
+
+    try {
+      response = await get({
+        firstInput,
+        secondInput
+      });
+    } catch (err) {
+      return props.events.error(
+        response?.text() || {
+          message: err.message,
+          status: 400
+        }
+      );
+    }
+
+    const location = await extractResponse(response);
+
+    if (location) {
+      return props.events.success(location);
+    }
+  }, [firstInput, secondInput, validate, props.events, get, extractResponse]);
+
+  const handleKeyUp = React.useCallback((event) => {
+    if (event.key !== 'Enter') {
+      return;
+    }
+
+    find();
+  }, [find]);
 
   return {
     // prop getters
@@ -396,5 +397,4 @@ BootstrapDartboard.propTypes = TailwindDartboard.propTypes = {
   callback: PropTypes.string
 };
 
-export default BootstrapDartboard;
 export { useDartboard, BootstrapDartboard, TailwindDartboard };
