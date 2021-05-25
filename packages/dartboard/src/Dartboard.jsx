@@ -305,8 +305,8 @@ const useDartboard = (userProps = {}) => {
 
     const point = {
       type: 'point',
-      x: result.location.x,
-      y: result.location.y,
+      x: result.location.x || result.geometry.x,
+      y: result.location.y || result.geometry.y,
       spatialReference: {
         wkid: props.wkid
       }
